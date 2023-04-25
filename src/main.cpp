@@ -13,20 +13,21 @@ typedef struct {
   float acc_x;
   float acc_y;
   float r;
+  Color color;
 } Object;
 
 typedef std::vector<Object> Objects;
 
 void run_physics(Objects *objects, float dt) {
   for (auto it = objects->begin(); it != objects->end(); it++) {
-    const auto cx = it->x;
-    const auto cy = it->y;
+    const float x = 2 * it->x - it->old_x + it->acc_x * dt * dt;
+    const float y = 2 * it->y - it->old_y + it->acc_y * dt * dt;
 
-    it->x = 2 * it->x - it->old_x + it->acc_x * dt * dt;
-    it->y = 2 * it->y - it->old_y + it->acc_y * dt * dt;
+    it->old_x = it->x;
+    it->old_y = it->y;
 
-    it->old_x = cx;
-    it->old_y = cy;
+    it->x = x;
+    it->y = y;
 
     it->acc_x = 0;
     it->acc_y = 0;
@@ -92,6 +93,7 @@ int main() {
 
   int oida = 0;
   Objects objects;
+  bool reset = true;
 
   while (!WindowShouldClose()) {
     const auto mouse = GetMousePosition();
@@ -101,6 +103,9 @@ int main() {
     const auto frametime = GetFrameTime();
     const auto dt = 1.0f / 60.0f;
 
+    if (IsKeyPressed(KEY_R))
+      reset = true;
+
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
       const auto o = Object{.id = oida++,
                             .x = mouse.x,
@@ -109,8 +114,14 @@ int main() {
                             .old_y = mouse.y - 10,
                             .acc_x = 0,
                             .acc_y = 0,
-                            .r = 10};
+                            .r = 10,
+                            .color = BLACK};
       objects.push_back(o);
+    }
+
+    if (reset) {
+      objects.clear();
+      reset = false;
     }
 
     accumulator += frametime;
@@ -130,10 +141,12 @@ int main() {
     DrawCircle(width / 2, height / 2, radius, RAYWHITE);
 
     for (auto it = objects.cbegin(); it != objects.cend(); ++it) {
-      DrawCircle(it->x, it->y, it->r, it->id % 2 ? DARKGRAY : BLACK);
+      DrawCircle(it->x, it->y, it->r, it->color);
     }
 
     DrawFPS(10, 10);
+    DrawText("L-Mouse to spawn objects", 10, 27, 20, DARKGRAY);
+    DrawText("R to reset", 10, 44, 20, DARKGRAY);
 
     EndDrawing();
   }
