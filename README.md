@@ -1,14 +1,23 @@
-# Playground Template
+# Verlet simulation
 
-A template to create a base playground/sandbox project in C++ with preconfigured CMakeLists.txt file.
+A simple verlet simulation.
 
-## Usage
+## Building
 
-See the official GitHub docs on how to use a template repository to create your own - [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+```bash
+# working dir ./
+mkdir build
+cd build
+cmake ..
+make
+```
 
-## Included dependencies
+## Running
 
-- [Raylib](https://www.raylib.com)
+```bash
+# working dir ./build
+./verlet
+```
 
 ## License
 
